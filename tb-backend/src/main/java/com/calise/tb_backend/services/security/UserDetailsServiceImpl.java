@@ -17,12 +17,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private UserDAO userDAO;
 
     @Override
-    public UserDetailsImpl loadUserByUsername(String username) throws BadCredentialsException {
+    public User loadUserByUsername(String username) throws BadCredentialsException {
         Optional<User> user = userDAO.findUserByUsername(username);
 
-        if(user.isPresent()) {
-            return UserDetailsImpl.build(user.get());
-        }
-        return null;
+        return user.orElse(null);
     }
 }

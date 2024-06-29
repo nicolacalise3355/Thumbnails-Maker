@@ -68,7 +68,7 @@ public class SecurityConfiguration {
             Map<String, Object> data = new HashMap<>();
             data.put("timestamp", LocalDateTime.now().withNano(0).toString());
             data.put("status", HttpStatus.UNAUTHORIZED.value());
-            data.put("message", "Accesso non autorizzato. !!!!");
+            data.put("message", authException.getMessage());
 
             ObjectMapper objectMapper = new ObjectMapper();
             response.getOutputStream().println(objectMapper.writeValueAsString(data));

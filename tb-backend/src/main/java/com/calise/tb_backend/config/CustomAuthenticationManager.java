@@ -1,5 +1,8 @@
 package com.calise.tb_backend.config;
 
+import com.calise.tb_backend.models.entities.User;
+import com.calise.tb_backend.models.security.UserDetailsImpl;
+import com.calise.tb_backend.services.security.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,14 +19,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class CustomAuthenticationManager implements AuthenticationManager {
     @Autowired
-    private UserDetailsService userDetailsService;
+    private UserDetailsServiceImpl userDetailsService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        final UserDetails userDetail = userDetailsService.loadUserByUsername(authentication.getName());
+        final User userDetail = userDetailsService.loadUserByUsername(authentication.getName());
         if (!this.passwordEncoder.matches(authentication.getCredentials().toString(), userDetail.getPassword())) {
             throw new BadCredentialsException("Wrong password");
         }
