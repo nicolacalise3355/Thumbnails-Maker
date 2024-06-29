@@ -2,7 +2,7 @@
 import './App.css'
 import { AppRoutes } from './Routes'
 import { DataProvider } from './context/DataProvider'
-import { FallbackPage } from './pages'
+import { FallbackPage, LoginPage } from './pages'
 import AppStructure from './structure/ApplicationStructure'
 import ErrorBoundary from './structure/ErrorBoundary'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
@@ -14,6 +14,7 @@ function App() {
         <DataProvider>
           <BrowserRouter>
             <Routes>
+              <Route key='login-page' path='/' element={<LoginPage />} />
               {AppRoutes.map((route) => {
                   return(
                     <Route key={route.path} path={route.path} element={

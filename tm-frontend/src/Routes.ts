@@ -9,5 +9,5 @@ export interface IAppRoute{
 }
 
 export const AppRoutes: IAppRoute[] = [
-    { path: '/', component: ExamplePage, icon: "Home", title: "Homepage" },
+    { path: '/example', component: ExamplePage, icon: "Home", title: "Example" },
 ];
