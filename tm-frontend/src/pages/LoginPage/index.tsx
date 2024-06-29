@@ -1,6 +1,28 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useContextDataProvider } from "../../context/DataProvider";
+import _costants from "../../costants";
 
 export const LoginPage = () => {
+
+  const { setApiToken } = useContextDataProvider();
+  const { paths } = _costants;
+
+  //Set login 
+  const [loginResult, setLoginResult] = React.useState({});
+  const [error, setError] = React.useState<any | undefined>(undefined)
+  const [isLoading, setIsLoading] = React.useState(false);
+  
+  const navigate = useNavigate();
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const data = new FormData(event.currentTarget);
+    console.log(data);
+    
+  };
+
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -9,7 +31,7 @@ export const LoginPage = () => {
         </h2>
       </div>
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
             <div className="flex items-center justify-between">
               <label

@@ -8,11 +8,11 @@ export const ctx = createContext({});
 
 export const DataProvider = ({children} : ContextProps) => {
 
-    const [api_token, setApiToken] = useState("");
+    const [apiToken, setApiToken] = useState("");
 
     return (
         <ctx.Provider value={{ 
-            api_token,
+            apiToken,
             setApiToken
         }}>
             {children}
