@@ -19,7 +19,7 @@ export const LoginPage = () => {
     event.preventDefault();
 
     const data = new FormData(event.currentTarget);
-    console.log(data);
+    console.log(data, event);
     
   };
 
