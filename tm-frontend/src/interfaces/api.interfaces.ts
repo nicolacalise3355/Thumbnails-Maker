@@ -4,7 +4,14 @@ export type Response = {
     data: any
 }
 
+export type DataObjectValue = object[] | object;
+
 export interface LoginReponse {
     token: string;
     expiresIn: number;
+}
+
+export interface DataResponse {
+  statusCode: number;
+  value: DataObjectValue;
 }

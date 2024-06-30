@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+//import _costants from '../costants';
 
 const useFetch = (url: string, method: string = 'GET', token: string = '') => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -6,20 +7,20 @@ const useFetch = (url: string, method: string = 'GET', token: string = '') => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  //const { option_header } = _costants;
+
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       setError(null);
 
       try {
-        //TODO: handle different type of token
         const options: RequestInit = {
             method: method,
             headers: {
               'Authorization': `Bearer ${token}`
             }
           };
-
         const response = await fetch(url, options); 
         if (!response.ok) {
           throw new Error('HTTP Error.');

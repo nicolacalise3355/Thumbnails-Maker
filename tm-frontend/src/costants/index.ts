@@ -8,7 +8,8 @@ const option_header = {
 
 const paths = {
   httpServerUrl: host,
-  auth: `${host}/auth/login`
+  auth: `${host}/auth/login`,
+  videos: `${host}/api/v1/video/list`
 }
 
 const http_req = {

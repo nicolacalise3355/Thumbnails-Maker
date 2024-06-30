@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ExamplePage } from "./pages";
+import { UploadPage, VideosPage } from "./pages";
 
 export interface IAppRoute{
     path: string;
@@ -9,5 +9,6 @@ export interface IAppRoute{
 }
 
 export const AppRoutes: IAppRoute[] = [
-    { path: '/example', component: ExamplePage, icon: "Home", title: "Example" },
+    { path: '/videos', component: VideosPage, icon: "video", title: "Videos" },
+    { path: '/upload', component: UploadPage, icon: "upload", title: "Upload" },
 ];

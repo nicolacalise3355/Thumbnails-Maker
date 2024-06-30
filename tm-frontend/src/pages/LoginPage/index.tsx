@@ -34,7 +34,7 @@ export const LoginPage = () => {
   useEffect(() => {
     if(loginResult?.success){
       setApiToken((loginResult.data as LoginReponse).token);
-      navigate('')
+      navigate('videos')
     }
     if(loginResult && !loginResult.success){
       setError('Login errato');
