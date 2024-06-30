@@ -1,8 +1,14 @@
-const host = 'http://localhost/'
-//const path = ''
+const port = 8080;
+const host = `http://localhost:${port}`
+
+const option_header = {
+  Accept: 'application/json',
+  'Content-Type': 'application/json',
+}
 
 const paths = {
-  httpServerUrl: host
+  httpServerUrl: host,
+  auth: `${host}/auth/login`
 }
 
 const http_req = {
@@ -12,6 +18,6 @@ const http_req = {
     DELETE: "DELETE"
 }
 
-const _costants = { paths, http_req }
+const _costants = { paths, http_req, option_header }
 
 export default _costants;
