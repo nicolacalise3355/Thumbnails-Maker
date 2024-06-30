@@ -1,13 +1,10 @@
 import { useState, useEffect } from 'react';
-//import _costants from '../costants';
 
 const useFetch = (url: string, method: string = 'GET', token: string = '') => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  //const { option_header } = _costants;
 
   useEffect(() => {
     const fetchData = async () => {

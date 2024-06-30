@@ -16,6 +16,7 @@ export const VideosPage = () => {
 
   const downloadThumbnails = (id: number) => {
     console.log(id)
+    //fetch the download of the thumbnails..
   }
 
   return (

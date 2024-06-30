@@ -1,5 +1,6 @@
 package com.calise.tb_backend.controllers.sockets;
 
+import com.calise.tb_backend.services.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,27 +26,29 @@ public class VideoUploadController {
     public Map<String, String> uploadVideo(@RequestParam("file") MultipartFile file) {
         Map<String, String> response = new HashMap<>();
         String fileName = file.getOriginalFilename();
-
-        /**
-         * Export everything is service
-         * 1) Upload video
-         * 2) Add video data to db
-         * 3) Run the queue of Extracting tn
-         */
+        String generatedFileName = Utils.generateFileName(fileName);
         try {
-            File convFile = new File(System.getProperty("java.io.tmpdir") + "/" + fileName);
-            convFile.createNewFile();
-            FileOutputStream fos = new FileOutputStream(convFile);
-            fos.write(file.getBytes());
-            fos.close();
+            messagingTemplate.convertAndSend("/wsconnection/status", "init");
 
-            // send notifications.
-            messagingTemplate.convertAndSend("/topic/uploadProgress", "Caricamento completato: " + fileName);
+            File convFile = new File(System.getProperty("user.dir") + "/assets/videos/" + generatedFileName);
+            convFile.createNewFile();
+            try (FileOutputStream fos = new FileOutputStream(convFile)) {
+                fos.write(file.getBytes());
+            }
+
+            // Simulate some processing time
+            Thread.sleep(3000);
+            messagingTemplate.convertAndSend("/wsconnection/status", "doing");
+
+            // More processing...
+            Thread.sleep(3000);
+            messagingTemplate.convertAndSend("/wsconnection/status", "end");
 
             response.put("message", "Caricamento completato con successo!");
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             response.put("message", "Errore durante il caricamento del video.");
+            messagingTemplate.convertAndSend("/wsconnection/status", "error");
         }
 
         return response;
