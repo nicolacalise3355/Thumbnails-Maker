@@ -16,12 +16,24 @@ public class Video {
     @Column(nullable = false)
     private String uri;
 
-    public Video(String uri, String title) {
+    @Column(nullable = false)
+    private String filename;
+
+    public Video(String uri, String title,String filename) {
         this.uri = uri;
         this.title = title;
+        this.filename = filename;
     }
 
     public Video() {}
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
 
     public int getId() {
         return id;

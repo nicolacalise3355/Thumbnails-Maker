@@ -11,12 +11,11 @@ import com.calise.tb_backend.models.http.HttpResponseValid;
 import com.calise.tb_backend.services.entities.VideoServices;
 import com.calise.tb_backend.staticdata.Codes;
 import com.calise.tb_backend.staticdata.messages.GeneralMessages;
+import com.calise.tb_backend.staticdata.messages.entities.VideoMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/video")
@@ -43,6 +42,16 @@ public class VideoController {
     @GetMapping("/list")
     public ResponseEntity<?> getAllVideos(){
         return ResponseEntity.ok(new HttpResponseValid(Codes.OK_CODE, this.videoServices.getAllVideos()));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteVideoById(@PathVariable int id) {
+        try {
+            videoServices.deleteVideoById(id);
+            return ResponseEntity.ok(new HttpResponseValid(HttpStatus.OK.value(), VideoMessage.VIDEO_DELETED));
+        } catch (VideoException e) {
+            return ResponseEntity.ok(new HttpResponseInvalid(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+        }
     }
 
 }
