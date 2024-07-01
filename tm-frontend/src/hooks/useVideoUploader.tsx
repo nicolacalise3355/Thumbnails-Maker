@@ -1,37 +1,48 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const useVideoUploader = (uri: string, token: string) => {
-  const [status, setStatus] = useState('idle');
-  const [progress, setProgress] = useState(null);
+  const [status, setStatus] = useState({ code: 0, value: '' });
+  const [progress, setProgress] = useState({ code: 0, value: '' });
   const [result, setResult] = useState(null);
 
-  const [start, setStart] = useState(false)
 
-  useEffect(() => {
-    if(start) {
-      const socket = new WebSocket('ws://localhost:8080/wsconnection');
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [messageCount, setMessageCount] = useState(0);
 
-      socket.onopen = () => {
-        socket.send(JSON.stringify({
-          type: 'Authorization',
-          token: token,
-        }));
+  const runSocket = () => {
+      const socket = new WebSocket(`ws://localhost:8080/video?token=${token}`);
+      setSocket(socket)
+      
+      socket.onopen = () => { 
+        console.log('Connected to WebSocket');
+      };
+
+      socket.onclose = () => {
+        console.log('Disconnected from WebSocket');
       };
 
       socket.onmessage = (event) => {
         const message = event.data;
-        setProgress(message);
+        if(messageCount === 0){
+          setSessionId(message)
+        }
+        setMessageCount(messageCount + 1)
+        setProgress({ code: 1, value: message});
       };
   
       return () => socket.close();
-    }
-  }, [start]);
+  }
+
+  const closeSocket = () => {
+    socket?.close()
+  }
 
   const uploadFile = async (file: File) => {
-    setStart(true)
-    setStatus('uploading');
+    setStatus({ code: 1, value: 'Uploading video' });
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('session', sessionId ?? '');
 
     try {
       const response = await fetch(uri, {
@@ -44,15 +55,14 @@ const useVideoUploader = (uri: string, token: string) => {
 
       const data = await response.json();
       setResult(data);
-      setStatus('completed');
-      setStart(false)
+      setStatus({ code: 2, value: 'Video uploaded' });
     } catch (error) {
-      setStatus('error');
-      setStart(false)
+      setStatus({ code: -1, value: 'An error occurred in video uploading' });
     }
+
   };
 
-  return { status, progress, result, uploadFile };
+  return { status, progress, result, uploadFile, runSocket, closeSocket };
 };
 
 export default useVideoUploader;

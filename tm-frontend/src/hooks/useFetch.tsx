@@ -5,6 +5,7 @@ const useFetch = (url: string, method: string = 'GET', token: string = '') => {
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [reload, setReload] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,9 +33,13 @@ const useFetch = (url: string, method: string = 'GET', token: string = '') => {
     };
 
     fetchData();
-  }, [url, method, token]);
+  }, [url, method, token, reload]);
 
-  return { data, error, isLoading };
+  const reloadFetch = () => {
+    setReload(reload + 1)
+  }
+
+  return { data, error, isLoading, reloadFetch };
 };
 
 export default useFetch;

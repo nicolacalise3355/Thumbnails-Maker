@@ -12,7 +12,7 @@ const ExampleTopBar = () => {
   return (
     <header className="bg-slate-200">
       <nav className="mx-auto flex items-center justify-between pl-8 pr-16 py-4" aria-label="Global">
-        <div className="flex lg:flex-1">
+        <div className="flex lg:flex-1 sm:hidden">
           <a href="" className="">
             <img className="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="" />
           </a>
