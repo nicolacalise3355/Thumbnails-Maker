@@ -10,6 +10,7 @@ import com.calise.tb_backend.staticdata.Codes;
 import com.calise.tb_backend.staticdata.messages.entities.VideoMessage;
 import org.jcodec.api.FrameGrab;
 import org.jcodec.common.io.NIOUtils;
+import org.jcodec.common.io.SeekableByteChannel;
 import org.jcodec.common.model.Picture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,14 +47,19 @@ public class UploadService {
 
         try {
             webSocketHandler.sendUploadStatus(sessionId, "Starting Video upload",1);
-            Thread.sleep(2000);
+            Thread.sleep(1000);
             String fileName = file.getOriginalFilename();
             String generatedFileName = Utils.generateFileName(fileName);
 
             File convFile = new File(System.getProperty("user.dir") + videoAssetsDir + generatedFileName);
             convFile.createNewFile();
-            try (FileOutputStream fos = new FileOutputStream(convFile)) {
+            FileOutputStream fos = new FileOutputStream(convFile);
+            try {
                 fos.write(file.getBytes());
+            } catch(IOException e){
+                e.printStackTrace();
+            } finally {
+                fos.close();
             }
 
             Video newVideoEntity = saveVideoEntity(fileName, "localhost:8080" + videoAssetsDir + generatedFileName, generatedFileName);
@@ -62,6 +68,7 @@ public class UploadService {
             }
             generateThumbnails(convFile, generatedFileName, sessionId);
             webSocketHandler.closeConnection(sessionId);
+
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -88,30 +95,36 @@ public class UploadService {
         Path newP = Files.createDirectories(path);
         if(newP != null) {
 
-            FrameGrab grab = FrameGrab.createFrameGrab(NIOUtils.readableChannel(file));
-            Picture picture;
-            double fps = grab.getVideoTrack().getMeta().getTotalFrames() / grab.getVideoTrack().getMeta().getTotalDuration();
-            int frameNumber = 0;
-            int interval = (int) (fps * 3);
-            boolean go = true;
-            while (go) {
-                try{
-                    picture = grab.seekToFramePrecise(frameNumber).getNativeFrame();
-                } catch(NullPointerException e){
-                    go = false;
-                    break;
-                }
+            try (SeekableByteChannel channel = NIOUtils.readableChannel(file)) {
+                FrameGrab grab = FrameGrab.createFrameGrab(channel);
+                Picture picture;
+                double fps = grab.getVideoTrack().getMeta().getTotalFrames() / grab.getVideoTrack().getMeta().getTotalDuration();
+                int frameNumber = 0;
+                int interval = (int) (fps * 3);
+                boolean go = true;
+                while (go) {
+                    try {
+                        picture = grab.seekToFramePrecise(frameNumber).getNativeFrame();
+                    } catch (NullPointerException e) {
+                        go = false;
+                        break;
+                    }
 
-                if (picture == null) {
-                    go = false;
-                    break;
+                    if (picture == null) {
+                        go = false;
+                        break;
+                    }
+                    BufferedImage bufferedImage = AWTUtil.toBufferedImage(picture);
+                    File thumbnailFile = new File(specificThumbnailDirectoryPath + "thumbnail-" + String.format("%03d", frameNumber / interval) + ".png");
+                    ImageIO.write(bufferedImage, "png", thumbnailFile);
+                    frameNumber += interval;
                 }
-                BufferedImage bufferedImage = AWTUtil.toBufferedImage(picture);
-                File thumbnailFile = new File(specificThumbnailDirectoryPath + "thumbnail-" + String.format("%03d", frameNumber / interval) + ".png");
-                ImageIO.write(bufferedImage, "png", thumbnailFile);
-                frameNumber += interval;
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+
         }
+
         webSocketHandler.sendUploadStatus(sessionId, "Completed generation of thumbnails", 4);
     }
 
