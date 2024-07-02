@@ -42,7 +42,7 @@ export const UploadPage = () => {
                   <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">PNG</p>
                 </div>
-                <input onChange={handleFileChange} id="dropzone-file" type="file" className="hidden" />
+                <input disabled={selectedFile !== null} onChange={handleFileChange} id="dropzone-file" type="file" className="hidden" />
               </label>
             </div>
             {selectedFile?.name && 

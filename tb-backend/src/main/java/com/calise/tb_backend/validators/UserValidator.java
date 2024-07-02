@@ -6,6 +6,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserValidator {
 
+    /**
+     * Class used to defined methods to validate user entities and DTO
+     */
+
     public boolean isUserValid(UserRequestDto userRequestDTO) {
         return isUserNotNull(userRequestDTO) &&
                 isPasswordValid(userRequestDTO);

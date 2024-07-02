@@ -19,6 +19,10 @@ import org.jcodec.scale.ColorUtil;
 import org.jcodec.scale.RgbToBgr;
 import org.jcodec.scale.Transform;
 
+/**
+ * https://github.com/jcodec/jcodec/blob/master/src/test/java/org/jcodec/scale/AWTUtil.java
+ * Used with JCODE to extract thumbnail
+ */
 public class AWTUtil {
     private static final int alphaR = 0xff;
     private static final int alphaG = 0xff;

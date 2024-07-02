@@ -28,13 +28,20 @@ public class ThumbnailsService {
     @Autowired
     private VideoDAO videoRepository;
 
+    /**
+     *
+     * @param id of video
+     * @param ts size
+     * @return Resource with thumbnail
+     * @throws IOException
+     * From video id, take a random thumb from that video and resize that if needed
+     */
     public InputStreamResource getThumbnail(int id, ThumbSize ts) throws IOException {
         Optional<Video> v = videoRepository.findById(id);
         if(!v.isPresent()){
             return null;
         }
         String specificThumbnailDirectoryPath = "." + thumbnailsAssetsDir + Utils.removeFileExtension(v.get().getFilename()) + "/";
-        System.out.println(specificThumbnailDirectoryPath);
         File dir = new File(specificThumbnailDirectoryPath);
         File[] files = dir.listFiles((d, name) -> name.endsWith(".png"));
         if (files == null || files.length == 0) {
@@ -56,6 +63,14 @@ public class ThumbnailsService {
         return resource;
     }
 
+    /**
+     *
+     * @param originalImage
+     * @param width
+     * @param height
+     * @return
+     * Resize the image
+     */
     private BufferedImage resizeImage(BufferedImage originalImage, int width, int height) {
         Image tmp = originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
         BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);

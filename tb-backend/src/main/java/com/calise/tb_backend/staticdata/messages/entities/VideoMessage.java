@@ -10,4 +10,7 @@ public class VideoMessage {
     public static final String VIDEO_NOT_VALID = "Video not valid!";
     public static final String ERROR = "Video Error";
 
+    public static final String VIDEO_UPLOAD_FINISH = "Starting Video upload";
+    public static final String VIDEO_UPLOAD_FAIL = "Finished Video successful";
+    public static final String NOT_UPLOADED = "Video upload failed";
 }

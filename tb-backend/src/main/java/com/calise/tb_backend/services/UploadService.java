@@ -7,6 +7,7 @@ import com.calise.tb_backend.models.entities.Video;
 import com.calise.tb_backend.services.utils.AWTUtil;
 import com.calise.tb_backend.services.utils.Utils;
 import com.calise.tb_backend.staticdata.Codes;
+import com.calise.tb_backend.staticdata.messages.entities.ThumbnailsMessages;
 import com.calise.tb_backend.staticdata.messages.entities.VideoMessage;
 import org.jcodec.api.FrameGrab;
 import org.jcodec.common.io.NIOUtils;
@@ -40,13 +41,21 @@ public class UploadService {
     @Value("${data.assetdir.thumbnails}")
     private String thumbnailsAssetsDir;
 
+    /**
+     *
+     * @param file File to upload and save as entity
+     * @param sessionId session id used to send message to the socket
+     * @return true if upload is done
+     * @throws VideoUploadException
+     * The method save the file inside a directory, then call a method to generate thumbnails for that file
+     */
     public boolean saveFile(MultipartFile file, String sessionId) throws VideoUploadException{
         if (file.isEmpty()) {
             throw new VideoUploadException(VideoMessage.VIDEO_NOT_VALID, Codes.ERROR_CODE);
         }
 
         try {
-            webSocketHandler.sendUploadStatus(sessionId, "Starting Video upload",1);
+            webSocketHandler.sendUploadStatus(sessionId, VideoMessage.NOT_UPLOADED,1);
             Thread.sleep(1000);
             String fileName = file.getOriginalFilename();
             String generatedFileName = Utils.generateFileName(fileName);
@@ -64,16 +73,16 @@ public class UploadService {
 
             Video newVideoEntity = saveVideoEntity(fileName, "localhost:8080" + videoAssetsDir + generatedFileName, generatedFileName);
             if(newVideoEntity != null) {
-                webSocketHandler.sendUploadStatus(sessionId, "Video Upload successful", 2);
+                webSocketHandler.sendUploadStatus(sessionId, VideoMessage.VIDEO_UPLOAD_FINISH, 2);
             }
-            generateThumbnails(convFile, generatedFileName, sessionId);
+            generateThumbnails(convFile, sessionId);
             webSocketHandler.closeConnection(sessionId);
 
             return true;
         } catch (IOException e) {
             e.printStackTrace();
             try {
-                webSocketHandler.sendUploadStatus(sessionId, "Upload failed", -1);
+                webSocketHandler.sendUploadStatus(sessionId, VideoMessage.VIDEO_UPLOAD_FAIL, -1);
                 webSocketHandler.closeConnection(sessionId);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -85,11 +94,18 @@ public class UploadService {
         }
     }
 
-    private void generateThumbnails(File file, String filename, String sessionId) throws Exception {
+    /**
+     *
+     * @param file file to extract thumbnails
+     * @param sessionId session id to send message to the socket channel
+     * @throws Exception
+     * Generate a directory basse in the file, then ins in the folder some thumbnails extracted from the file
+     */
+    private void generateThumbnails(File file, String sessionId) throws Exception {
         String videoFileName = file.getName();
         String baseFileName = videoFileName.substring(0, videoFileName.lastIndexOf('.'));
         String specificThumbnailDirectoryPath = "." + thumbnailsAssetsDir + baseFileName + "/";
-        webSocketHandler.sendUploadStatus(sessionId, "Analyzing to generate thumbnails", 3);
+        webSocketHandler.sendUploadStatus(sessionId, ThumbnailsMessages.ANALYZING, 3);
 
         Path path = Paths.get(specificThumbnailDirectoryPath);
         Path newP = Files.createDirectories(path);
@@ -125,10 +141,18 @@ public class UploadService {
 
         }
 
-        webSocketHandler.sendUploadStatus(sessionId, "Completed generation of thumbnails", 4);
+        webSocketHandler.sendUploadStatus(sessionId, ThumbnailsMessages.COMPLETED_GENERATION, 4);
     }
 
 
+    /**
+     *
+     * @param title
+     * @param uri
+     * @param fileName
+     * @return Video entity save
+     * Save an entity in the db
+     */
     public Video saveVideoEntity(String title, String uri, String fileName) {
         return videoRepository.save(new Video(uri, title, fileName));
     }

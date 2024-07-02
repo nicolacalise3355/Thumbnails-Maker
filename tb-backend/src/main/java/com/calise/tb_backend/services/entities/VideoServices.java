@@ -44,6 +44,12 @@ public class VideoServices {
         return this.videoMapper.toDto(this.videoDAO.findById(id).orElseThrow(() -> new VideoException(VideoMessage.VIDEO_NOT_FOUND, Codes.ERROR_CODE)));
     }
 
+    /**
+     *
+     * @param id
+     * @throws VideoException
+     * Afer deleted the entity
+     */
     public void deleteVideoById(int id) throws VideoException {
         Video v = this.videoDAO.findById(id).orElseThrow(() -> new VideoException(VideoMessage.VIDEO_NOT_FOUND, Codes.ERROR_CODE));
         this.videoDAO.delete(v);
