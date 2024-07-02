@@ -1,10 +1,10 @@
 import { useState } from "react";
+import { isJsonParsable } from "../services";
 
 const useVideoUploader = (uri: string, token: string) => {
   const [status, setStatus] = useState({ code: 0, value: '' });
   const [progress, setProgress] = useState({ code: 0, value: '' });
   const [result, setResult] = useState(null);
-
 
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -14,21 +14,15 @@ const useVideoUploader = (uri: string, token: string) => {
       const socket = new WebSocket(`ws://localhost:8080/video?token=${token}`);
       setSocket(socket)
       
-      socket.onopen = () => { 
-        console.log('Connected to WebSocket');
-      };
-
-      socket.onclose = () => {
-        console.log('Disconnected from WebSocket');
-      };
-
       socket.onmessage = (event) => {
         const message = event.data;
         if(messageCount === 0){
           setSessionId(message)
         }
         setMessageCount(messageCount + 1)
-        setProgress({ code: 1, value: message});
+        const msg = isJsonParsable(message) ? JSON.parse(message) : message;
+        
+        setProgress({ code: msg['code'] ?? 0, value: msg['status'] ?? ''});
       };
   
       return () => socket.close();

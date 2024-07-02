@@ -33,10 +33,10 @@ public class FileUploadWebSocketHandler extends TextWebSocketHandler {
         System.out.println("WebSocket Connection Closed");
     }
 
-    public void sendUploadStatus(String sessionId, String status) throws Exception {
+    public void sendUploadStatus(String sessionId, String status, int code) throws Exception {
         WebSocketSession session = socketSessionsService.getSession(sessionId);
         if (session != null && session.isOpen()) {
-            session.sendMessage(new TextMessage("{\"status\":\"" + status + "\"}"));
+            session.sendMessage(new TextMessage("{\"code\": "+code+", \"status\": \"" + status + "\"}"));
         }
     }
 

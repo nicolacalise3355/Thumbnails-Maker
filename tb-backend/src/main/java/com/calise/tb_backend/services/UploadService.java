@@ -9,7 +9,6 @@ import com.calise.tb_backend.services.utils.Utils;
 import com.calise.tb_backend.staticdata.Codes;
 import com.calise.tb_backend.staticdata.messages.entities.VideoMessage;
 import org.jcodec.api.FrameGrab;
-import org.jcodec.api.JCodecException;
 import org.jcodec.common.io.NIOUtils;
 import org.jcodec.common.model.Picture;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +45,7 @@ public class UploadService {
         }
 
         try {
-            webSocketHandler.sendUploadStatus(sessionId, "Starting Video upload");
+            webSocketHandler.sendUploadStatus(sessionId, "Starting Video upload",1);
             Thread.sleep(2000);
             String fileName = file.getOriginalFilename();
             String generatedFileName = Utils.generateFileName(fileName);
@@ -59,7 +58,7 @@ public class UploadService {
 
             Video newVideoEntity = saveVideoEntity(fileName, "localhost:8080" + videoAssetsDir + generatedFileName, generatedFileName);
             if(newVideoEntity != null) {
-                webSocketHandler.sendUploadStatus(sessionId, "Video Upload successful");
+                webSocketHandler.sendUploadStatus(sessionId, "Video Upload successful", 2);
             }
             generateThumbnails(convFile, generatedFileName, sessionId);
             webSocketHandler.closeConnection(sessionId);
@@ -67,7 +66,7 @@ public class UploadService {
         } catch (IOException e) {
             e.printStackTrace();
             try {
-                webSocketHandler.sendUploadStatus(sessionId, "Upload failed");
+                webSocketHandler.sendUploadStatus(sessionId, "Upload failed", -1);
                 webSocketHandler.closeConnection(sessionId);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -83,7 +82,7 @@ public class UploadService {
         String videoFileName = file.getName();
         String baseFileName = videoFileName.substring(0, videoFileName.lastIndexOf('.'));
         String specificThumbnailDirectoryPath = "." + thumbnailsAssetsDir + baseFileName + "/";
-        webSocketHandler.sendUploadStatus(sessionId, "Analyzing to generate thumbnails");
+        webSocketHandler.sendUploadStatus(sessionId, "Analyzing to generate thumbnails", 3);
 
         Path path = Paths.get(specificThumbnailDirectoryPath);
         Path newP = Files.createDirectories(path);
@@ -113,7 +112,7 @@ public class UploadService {
                 frameNumber += interval;
             }
         }
-        webSocketHandler.sendUploadStatus(sessionId, "Completed generation of thumbnails");
+        webSocketHandler.sendUploadStatus(sessionId, "Completed generation of thumbnails", 4);
     }
 
 
