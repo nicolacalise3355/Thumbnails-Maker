@@ -34,11 +34,11 @@ Durante la generazione delle miniature ne verranno generate una per ogni 3 secon
 
 ![App Screenshot](./screens/login.JPG)
 
-![App Screenshot](./screens/login.JPG)
+![App Screenshot](./screens/upload.JPG)
 
-![App Screenshot](./screens/login.JPG)
+![App Screenshot](./screens/video.JPG)
 
-![App Screenshot](./screens/login.JPG)
+![App Screenshot](./screens/download.JPG)
 
 
 ## Installazione e utilizzo
